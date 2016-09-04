@@ -43,25 +43,24 @@ class OpcHelper {
             callback(pathDict);
           }
         }
-      }(i)));
+      }(item)));
     }
   }
 
   getChildrenNode(rootNode,childName,Next,callback){
-    if(Next.length==0){
-      console.log("result "+rootNode);
-      callback(rootNode);
-      return;
-    }
     console.log("getting root "+rootNode+" ->"+childName);
     this.session.browse(rootNode, function(err,browse_result){
       if(!err) {
         for(let i=0;i<browse_result[0].references.length;i++){
           let item = browse_result[0].references[i];
+          console.log(`    -> ${item.displayName.text}`);
           if(item.displayName.text == childName){
-            let newChildName = Next.shift();
-            console.log(item.displayName.text);
-            this.getChildrenNode(item.nodeId,newChildName,Next,callback);
+            if(Next.length==0){
+              callback(item.nodeId);
+            }else{
+              let newChildName = Next.shift();
+              this.getChildrenNode(item.nodeId,newChildName,Next,callback);
+            }
             return;
           }
         }
@@ -75,13 +74,50 @@ class OpcHelper {
   readValue(nodeId,callback){
     this.session.readVariableValue(nodeId, function(err,dataValue) {
       if (!err) {
-          console.log(" free mem % = " , dataValue.toString());
+        callback(dataValue);
+        return;
       }
       callback(err);
     });
   }
 
-  closeSession(){
+  createSubscription(callback){
+    this.subscription = new opcua.ClientSubscription(this.session,{
+        requestedPublishingInterval: 1000,
+        requestedLifetimeCount:1000,
+        requestedMaxKeepAliveCount: 1000,
+        maxNotificationsPerPublish: 10,
+        priority: 1
+    });
+    this.subscription.on("started",function(){
+        console.log("subscription started");
+    }).on("terminated",function(){
+        callback();
+    });
+
+    setTimeout(function(){
+        this.subscription.terminate();
+    }.bind(this),50000);
+  }
+
+  monitorNode(nodeId){
+    console.log(nodeId);
+    console.log(this.subscription);
+    return this.subscription.monitor({
+        nodeId: nodeId,
+        attributeId: opcua.AttributeIds.Value,
+    },
+    {
+        clientHandle:13,
+        samplingInterval: 1000,
+        discardOldest: true,
+        queueSize: 10
+    },
+    opcua.read_service.TimestampsToReturn.Neither
+    );
+  }
+
+  closeSession(callback){
     this.session.close(function(err){
         if(err) {
             console.log("session closed failed ?");
@@ -90,42 +126,34 @@ class OpcHelper {
     });
   }
 
-  DoProcess(callback){
-    var ref = this;
-    async.series([
+  DoProcess(tasks){
+    let asyncCom=tasks;
+    if(!this.session){
+      asyncCom = [
+        function(callback){
+          console.log("connect");
+          this.connect(callback);
+        }.bind(this),
+        function(callback){
+          console.log("session");
+          this.createSession(callback);
+        }.bind(this),
+      ].concat(tasks);
+    }
+
+    asyncCom.push(
       function(callback){
-        console.log("connect");
-        ref.connect(callback);
-      },
-      function(callback){
-        console.log("session");
-        ref.createSession(callback);
-      },
-      function(callback){
-        console.log("root folder....");
-        ref.getNodeIdByPath("RootFolder",["Objects/Infoplus/"],function(res){
-          if(res[0].error){
-            callback(res[0].error);
-          }else{
-            ref.node=res[0];
-            callback();
-          }
-        });
-      },
-      function(callback){
-        ref.readValue(ref.node,callback);
-      },
-      function(callback){
-        ref.closeSession(callback);
-      }
-    ],
+        this.closeSession(callback);
+      }.bind(this)
+    );
+    async.series(asyncCom,
       function(err) {
-          if (err) {
-              console.log(" failure ",err);
-          } else {
-              console.log("done!");
-          }
-          client.disconnect(function(){});
+        if (err) {
+            console.log(" failure ",err);
+        } else {
+            console.log("done!");
+        }
+        client.disconnect(function(){});
       }
     );
   }
