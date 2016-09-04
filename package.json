@@ -1,27 +1,21 @@
 {
-  "name": "electron-quick-start",
+  "name": "opcClientApp",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "An opc client app created using electron",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron/electron-quick-start.git"
+    "url": "git+https://github.com/jajool/OTS-OPC.git"
   },
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial"
+    "opc client",
+    "electron"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
-  "bugs": {
-    "url": "https://github.com/electron/electron-quick-start/issues"
-  },
-  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "author": "Ahmadf",
+  "license": "MIT",
   "devDependencies": {
     "electron-prebuilt": "^1.2.0"
   }
