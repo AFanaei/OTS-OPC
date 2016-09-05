@@ -1,5 +1,6 @@
 const opcua = require("node-opcua");
 const async = require("async");
+const opcSubscription = require("./opcSub");
 
 let client = new opcua.OPCUAClient();
 
@@ -82,12 +83,8 @@ class OpcHelper {
   }
 
   createSubscription(callback){
-    this.subscription = new opcua.ClientSubscription(this.session,{
+    this.subscription = new opcSubscription(this.session,{
         requestedPublishingInterval: 1000,
-        requestedLifetimeCount:1000,
-        requestedMaxKeepAliveCount: 1000,
-        maxNotificationsPerPublish: 10,
-        priority: 1
     });
     this.subscription.on("started",function(){
         console.log("subscription started");
@@ -97,12 +94,10 @@ class OpcHelper {
 
     setTimeout(function(){
         this.subscription.terminate();
-    }.bind(this),50000);
+    }.bind(this),2000);
   }
 
   monitorNode(nodeId){
-    console.log(nodeId);
-    console.log(this.subscription);
     return this.subscription.monitor({
         nodeId: nodeId,
         attributeId: opcua.AttributeIds.Value,
@@ -112,9 +107,7 @@ class OpcHelper {
         samplingInterval: 1000,
         discardOldest: true,
         queueSize: 10
-    },
-    opcua.read_service.TimestampsToReturn.Neither
-    );
+    });
   }
 
   closeSession(callback){
