@@ -7,23 +7,45 @@ let client = new opcua.OPCUAClient();
 class OpcHelper {
   constructor(endPoint){
     this.endPoint = endPoint;
+    this.events={
+      statusChange:[]
+    }
+  }
+
+  on(eventName,callback){
+    if(!this.events[eventName]){
+      return;
+    }
+    this.events[eventName].push(callback);
+    return this;
+  }
+
+  emit(eventName,params){
+    if(!this.events[eventName]){
+      return;
+    }
+    for(var i=0;i<this.events[eventName].length;i++){
+      this.events[eventName][i].call(this,params);
+    }
   }
 
   connect(callback){
+    this.emit('statusChange','connecting ...')
     client.connect(this.endPoint,function (err) {
       if(err) {
-          console.log(" cannot connect to endpoint :" , this.endPoint );
+        console.log(" cannot connect to endpoint :" , this.endPoint );
       } else {
-          console.log("connected !");
+        console.log("connected !");
       }
       callback(err);
     });
   }
 
   createSession(callback){
+    this.emit('statusChange','starting session ...')
     client.createSession( function(err,session) {
         if(!err) {
-            this.session = session;
+          this.session = session;
         }
         callback(err);
     }.bind(this));
@@ -49,7 +71,7 @@ class OpcHelper {
   }
 
   getChildrenNode(rootNode,childName,Next,callback){
-    console.log("getting root "+rootNode+" ->"+childName);
+    this.emit('statusChange','browsing')
     this.session.browse(rootNode, function(err,browse_result){
       if(!err) {
         for(let i=0;i<browse_result[0].references.length;i++){
@@ -89,12 +111,14 @@ class OpcHelper {
     this.subscription.on("started",function(){
         console.log("subscription started");
     }).on("terminated",function(){
+      if(callback){
         callback();
+      }
     });
 
-    setTimeout(function(){
-        this.subscription.terminate();
-    }.bind(this),2000);
+    //  setTimeout(function(){
+    //      this.subscription.terminate();
+    //  }.bind(this),6000);
   }
 
   monitorNode(nodeId){

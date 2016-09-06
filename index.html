@@ -2,14 +2,30 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>OPC-OTS</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="equipment.css" rel="stylesheet">
   </head>
   <body>
-    <h1>value reader</h1>
-    <p>
-      value:
-      <div id="container"></div>
-    </p>
+    <div class="container">
+      <form class="form-inline" style="margin-top:20px;">
+        <div class="form-group">
+          <label for="endPoint">End point url:</label>
+          <input type="text" class="form-control" id="endPoint" placeholder="server url ..."
+          value="opc.tcp://desktop-3jfpdcl:21381/MatrikonOpcUaWrapper">
+        </div>
+        <button type="submit" class="btn btn-default" id="connect">Connect!</button>
+        <div class="form-group" id="connectStatus"></div>
+      </form>
+      <hr>
+      <div class="col-xs-12 pid">
+        <div id="rafinateValue" class="equipmentVar" style="top:290px;left:770px"></div>
+        <div id="distilateValue" class="equipmentVar" style="top:140px;left:770px"></div>
+        <div id="valveValue" class="equipmentVar" style="top:220px;left:150px"></div>
+      </div>
+    </div>
   </body>
 
   <script>
