@@ -149,7 +149,7 @@ class OpcHelper {
   }
 
   DoProcess(tasks){
-    let asyncCom=tasks;
+    let asyncCom=[];
     if(!this.connected){
       asyncCom = [
         function(callback){
@@ -166,13 +166,10 @@ class OpcHelper {
         }.bind(this)
       );
       asyncCom = asyncCom.concat(tasks);
+    }else{
+      asyncCom=tasks;
     }
 
-    asyncCom.push(
-      function(callback){
-        this.closeSession(callback);
-      }.bind(this)
-    );
     async.series(asyncCom,
       function(err) {
         if (err) {
@@ -180,7 +177,6 @@ class OpcHelper {
         } else {
             console.log("done!");
         }
-        client.disconnect(function(){});
       }
     );
   }

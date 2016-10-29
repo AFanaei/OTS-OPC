@@ -1,0 +1,6 @@
+{"version":"1",
+  "equipments":
+  [{"id":1,"options":{"name":"rafinate"},"nodes":[{"sName":"A1113A","name":"rFlow","options":"options"}]},
+  {"id":1,"options":{"name":"distilate"},"nodes":[{"sName":"A1113B","name":"dFlow","options":"options"}]},
+  {"id":1,"options":{"name":"valve"},"nodes":[{"sName":"A1113C","name":"vFlow","options":"options"}]}]
+}
