@@ -1,5 +1,5 @@
-const OpcHelper = require("./opcHelper");
-const Equipment = require('./equipment');
+const OpcHelper = require("../opc/opcHelper");
+const Equipment = require('../opc/equipment');
 
 document.getElementById("connect").addEventListener('click',function(event){
   event.preventDefault();
@@ -17,7 +17,6 @@ document.getElementById("connect").addEventListener('click',function(event){
   helper.DoProcess([
     // find nodes!!!
     function(callback){
-      console.log("root folder....");
       this.getNodeIdByPath("RootFolder",["Objects/Infoplus/DefinitionRecords/IP_AnalogDef"],function(res){
         let item = res[Object.keys(res)[0]];
         if(item.error){

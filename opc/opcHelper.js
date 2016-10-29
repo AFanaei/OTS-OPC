@@ -72,6 +72,7 @@ class OpcHelper {
 
   getChildrenNode(rootNode,childName,Next,callback){
     this.emit('statusChange','browsing')
+    console.log(rootNode+"....");
     this.session.browse(rootNode, function(err,browse_result){
       if(!err) {
         for(let i=0;i<browse_result[0].references.length;i++){
