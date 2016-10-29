@@ -83,6 +83,7 @@ class EquipmentVar{
   serialize(){
     return {
       nodeId: this.nodeId,
+      sName: this.sName,
       name: this.name,
       options: this.options
     };
