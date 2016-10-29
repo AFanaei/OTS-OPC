@@ -1,16 +1,21 @@
 const OpcHelper = require("../opc/opcHelper");
-const Equipment = require('../opc/equipment');
+const Equipment = require('../equipment/equipment');
+const ipc = require('electron').ipcRenderer
+const bsn = require("bootstrap.native");
+
+ipc.on('new-connection', function (event) {
+  // document.getElementById('connectionModal').modal();
+  let modal = new bsn.Modal('#connectionModal').open();
+});
 
 document.getElementById("connect").addEventListener('click',function(event){
-  event.preventDefault();
-
   let endpointUrl = document.getElementById("endPoint").value;
   console.log(endpointUrl);
 
   let helper = new OpcHelper(endpointUrl);
 
   let nodes={"A1113A":0, "A1113B":0, "A1113C":0};
-  let statusElem = document.getElementById("connectStatus");
+  let statusElem = document.getElementById("status");
   helper.on('statusChange',function(status){
     statusElem.innerText = status;
   })

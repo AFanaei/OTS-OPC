@@ -7,6 +7,8 @@ let client = new opcua.OPCUAClient();
 class OpcHelper {
   constructor(endPoint){
     this.endPoint = endPoint;
+    this.session = null;
+    this.connected = false;
     this.events={
       statusChange:[]
     }
@@ -36,9 +38,10 @@ class OpcHelper {
         console.log(" cannot connect to endpoint :" , this.endPoint );
       } else {
         console.log("connected !");
+        this.connected=true;
       }
       callback(err);
-    });
+    }.bind(this));
   }
 
   createSession(callback){
@@ -140,23 +143,29 @@ class OpcHelper {
         if(err) {
             console.log("session closed failed ?");
         }
+        this.session=null;
         callback(err);
-    });
+    }.bind(this));
   }
 
   DoProcess(tasks){
     let asyncCom=tasks;
-    if(!this.session){
+    if(!this.connected){
       asyncCom = [
         function(callback){
           console.log("connect");
           this.connect(callback);
-        }.bind(this),
+        }.bind(this)
+      ];
+    }
+    if(!this.session){
+      asyncCom.push(
         function(callback){
           console.log("session");
           this.createSession(callback);
-        }.bind(this),
-      ].concat(tasks);
+        }.bind(this)
+      );
+      asyncCom = asyncCom.concat(tasks);
     }
 
     asyncCom.push(
