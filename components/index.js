@@ -24,6 +24,7 @@ ipc.on('save-layout', function (event, address) {
 ipc.on('load-layout', function(event, address) {
   try{
     eqManager.loadFromFile(address[0],helper,function(){
+      document.getElementById('eq-container').innerHTML = eqManager.renderLayout();
       eqManager.startMonitoring(helper);
     });
   }catch(e){

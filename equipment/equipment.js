@@ -13,6 +13,9 @@ class Equipment{
   }
   startMonitoring(){
     let nodes = this.getNodesWithoutAddress();
+    if(!this.opcHelper){
+      return;
+    }
     if(nodes.length){
       this.opcHelper.DoProcess([
         // find nodes!!!

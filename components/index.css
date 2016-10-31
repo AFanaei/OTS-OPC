@@ -3,13 +3,9 @@
   position: relative;
   height: 400px;
 }
-.equipmentVar{
+.equipment{
   position: absolute;
-  width: 100px;
-  height: 40px;
   border: 1px solid black;
-  height: 30px;
-  line-height: 30px;
   text-align: center;
 }
 .status-bar{
