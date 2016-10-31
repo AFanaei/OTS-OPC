@@ -41,9 +41,6 @@ class Equipment{
             this.getVariableById(i).nodeId=nodes[i];
           }
           for(var i=0;i<this.nodesToMonitor.length;i++){
-            this.nodesToMonitor[i].subscribe(function(value){
-              console.log("rafinateValue:"+value);
-            });
             this.nodesToMonitor[i].startMonitoring(this.opcHelper);
           }
         }.bind(this)

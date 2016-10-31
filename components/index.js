@@ -24,7 +24,13 @@ ipc.on('save-layout', function (event, address) {
 ipc.on('load-layout', function(event, address) {
   try{
     eqManager.loadFromFile(address[0],helper,function(){
-      document.getElementById('eq-container').innerHTML = eqManager.renderLayout();
+      let {tag, variable}=eqManager.renderLayout();
+      document.getElementById('eq-container').innerHTML = tag;
+      variable.forEach((x)=>{
+        x.subscribe((newValue)=>{
+          document.getElementById(`sName-${x.sName}`).innerHTML = Math.round(newValue*100)/100;
+        });
+      });
       eqManager.startMonitoring(helper);
     });
   }catch(e){

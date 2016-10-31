@@ -22,15 +22,18 @@ class EqManager{
   }
   renderLayout(){
     let arr = this.layout.map((v,i)=>{
-      let variable = v.eq.getVariableById(v.data.sName);
-      return `
+      let variable = {name:v.eq.options.name,sName:-1};
+      if(v.data){
+        variable = v.eq.getVariableById(v.data.sName);
+      }
+      return {tag:`
       <div id="id-${v.id}" class="equipment" style="left: ${v.pos.l}px; top: ${v.pos.t}px; width: ${v.pos.w}px; height: ${v.pos.h}px;">
         <div class="eq-name">${variable.name}</div>
-        <div class="eq-value"></div>
-      </div>`;
+        <div class="eq-value" id="sName-${variable.sName}"></div>
+      </div>`,variable:[variable]};
     });
     return arr.reduce((a,b)=>{
-      return a + b;
+      return {tag:a.tag + b.tag,variable:a.variable.concat(b.variable)};
     });
   }
   saveToFile(address){
