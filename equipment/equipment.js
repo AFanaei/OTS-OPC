@@ -1,6 +1,6 @@
 
 class Equipment{
-  constructor(id,options, helper, nodesToMonitor){
+  constructor(id, options, helper, nodesToMonitor){
     this.id=id;
     this.options = options;
     this.opcHelper = helper;
@@ -65,7 +65,7 @@ class Equipment{
   }
   serialize(){
     return {
-      id:1,
+      id:this.id,
       options:this.options,
       nodes:this.nodesToMonitor.map(function(value,index){ return value.serialize()})
     };
