@@ -4,8 +4,8 @@ class Equipment{
     this.id=id;
     this.options = options;
     this.opcHelper = helper;
-    this.nodesToMonitor = nodesToMonitor.map(function(value,index){
-      return new EquipmentVar(value);
+    this.nodesToMonitor = nodesToMonitor.map((value,index)=>{
+      return new EquipmentVar(value,this);
     });
   }
   getNodesWithoutAddress(){
@@ -72,13 +72,18 @@ class Equipment{
   }
 }
 class EquipmentVar{
-  constructor(obj){
+  constructor(obj, parent){
+    this.eq = parent;
     this.nodeId = obj.nodeId;
     this.name = obj.name;
     this.sName = obj.sName;
-    this.options = obj.options;
+    this.options = Object.assign({
+        editable:false,
+        maxHistory:100,
+      },obj.options);
     this.subscriptions={};
     this.subscriptionId=0;
+    this.history=[];
   }
   serialize(){
     return {
@@ -102,11 +107,19 @@ class EquipmentVar{
   startMonitoring(helper){
     this.monitoredInterface = helper.monitorNode(this.nodeId);
     this.monitoredInterface.on('changed',function(value){
+      this.log(value);
       this.publish(value);
     }.bind(this));
   }
   stopMonitoring(helper){
     this.monitoredInterface = helper.unMonitorNode(this.nodeId);
+  }
+  log(value){
+    if(this.history.length==this.options.maxHistory){
+        this.history.shift();
+    }
+    //TODO: get time from opcserver.
+    this.history.push({Date.now(),value});
   }
 }
 

@@ -2,10 +2,12 @@ const OpcHelper = require("../opc/opcHelper");
 const Equipment = require('../equipment/equipment');
 const EqManager = require('../equipment/eqManager');
 const Logger = require("../util/logger");
+const EqDrawer = require("./equipmentDrawer");
 const ipc = require('electron').ipcRenderer
 const bsn = require("bootstrap.native");
 
-const eqManager = new EqManager();
+const eqDrawer = new EqDrawer(document.getElementById("equipment-modal"));
+const eqManager = new EqManager(document.getElementById("logs"));
 const logger = new Logger(document.getElementById("logs"));
 let helper = null;
 let modal = null;
@@ -29,6 +31,9 @@ ipc.on('load-layout', function(event, address) {
       variable.forEach((x)=>{
         x.subscribe((newValue)=>{
           document.getElementById(`sName-${x.sName}`).innerHTML = Math.round(newValue*100)/100;
+        });
+        document.getElementById(`id-${x.eq.id}`).addEventListener('click',function(event){
+          eqDrawer.draw(x);
         });
       });
       eqManager.startMonitoring(helper);
