@@ -57,7 +57,7 @@ class Equipment{
   getVariableById(nodeId){
     for(var i=0;i<this.nodesToMonitor.length;i++){
       let item =this.nodesToMonitor[i];
-      if(item.sName == nodeId || item.nodeId.value.indexOf(nodeId)!=-1){
+      if(item.sName == nodeId || (item.nodeId && item.nodeId.value.indexOf(nodeId)!=-1)){
         return item;
       }
     }
@@ -84,6 +84,7 @@ class EquipmentVar{
     this.subscriptions={};
     this.subscriptionId=0;
     this.history=[];
+    this.lastValue=-1;
   }
   serialize(){
     return {
@@ -95,23 +96,26 @@ class EquipmentVar{
   }
   publish(value){
     for(var i in this.subscriptions){
-      this.subscriptions[i].call(null,value);
+      if(this.subscriptions.hasOwnProperty(i)){
+        this.subscriptions[i].call(null,value);
+      }
     }
   }
   subscribe(callback){
     this.subscriptions[this.subscriptionId]=callback;
     this.subscriptionId++;
-    return this.subscriptionId;
+    return this.subscriptionId-1;
   }
   unsubscribe(subscriptionId){
-    delete this.subscriptions[this.subscriptionId];
+    delete this.subscriptions[subscriptionId];
   }
   startMonitoring(helper){
     this.monitoredInterface = helper.monitorNode(this.nodeId);
-    this.monitoredInterface.on('changed',function(value){
+    this.monitoredInterface.on('changed',(value)=>{
+      this.lastValue = value;
       this.log(value);
       this.publish(value);
-    }.bind(this));
+    });
   }
   stopMonitoring(helper){
     this.monitoredInterface = helper.unMonitorNode(this.nodeId);

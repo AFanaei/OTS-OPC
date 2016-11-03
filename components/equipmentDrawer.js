@@ -69,6 +69,7 @@ class EqDrawer{
     this.subIds=[];
     this.series=null;
     if(this.chartVar){
+      console.log('removed:'+this.chartId);
       this.chartVar.unsubscribe(this.chartId);
     }
     this.chartId=null;
@@ -90,6 +91,7 @@ class EqDrawer{
     this.chartId = variable.subscribe((x)=>{
       this.series.addPoint([Date.now(),x]);
     });
+    console.log('created:'+this.chartId);
   }
   draw(eq){
     let TAG = {main:`
@@ -116,7 +118,7 @@ class EqDrawer{
             <div class='col-xs-3 text-center'>${eq.nodesToMonitor[i].options.unit}</div>
             <div class='col-xs-4 text-center'>
               <label class="sr-only" for="var-value-${i}">Email address</label>
-              <input type="text" class="form-control var-value input-sm" id="var-value-${i}" ${enabled}>
+              <input type="text" class="form-control var-value input-sm" id="var-value-${i}" ${enabled} value="${eq.nodesToMonitor[i].lastValue}">
             </div>
           </div>
           `;
