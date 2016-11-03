@@ -54,7 +54,7 @@ class EqDrawer{
       plotOptions: {
           spline: {
               marker: {
-                  enabled: true
+                  enabled: false
               }
           }
       },
@@ -76,16 +76,15 @@ class EqDrawer{
     this.chartVar= null;
   }
   showChart(variable){
-
     if(this.series){
-      this.series.remove();
+      this.series=null;
       this.chartVar.unsubscribe(this.chartId);
       this.chartId=null;
       this.chartVar= variable;
     }
     this.chart.setTitle(`${variable.eq.name}=>${variable.name}`);
     this.series = this.chart.addSeries(
-      {name:`${variable.name}(${variable.options.unit})`,data:variable.history}
+      {name:`${variable.name}(${variable.options.unit})`,data:variable.history.slice(0)}
     );
     this.chartVar = variable;
     this.chartId = variable.subscribe((x)=>{
