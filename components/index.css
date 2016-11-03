@@ -38,3 +38,10 @@
 .log.log-info{
   color:#31708f;
 }
+.row-var{
+  height: 40px;
+  line-height: 40px;
+}
+.var-value{
+  margin-top:5px;
+}

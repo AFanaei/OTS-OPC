@@ -18,7 +18,7 @@ class EqDrawer{
     for(var i=0;i<this.vars.length;i++){
       let elem = this.element.querySelector(`#detail-${this.vars[i].sName}`);
       this.subIds[i] = this.vars[i].subscribe(function(elem,newValue){
-         elem.querySelector(`.var-value`).innerHTML=Math.round(newValue*100)/100;
+         elem.querySelector(`.var-value`).value=Math.round(newValue*100)/100;
       }.bind(this,elem));
       elem.addEventListener('click',function(variable){
         this.showChart(variable)
@@ -39,7 +39,7 @@ class EqDrawer{
     let TAG = {main:`
       <div class='row'>
         <div class='col-xs-6 var-table'>
-          <div class='row'>
+          <div class='row row-var'>
             <div class='col-xs-5'>variable</div>
             <div class='col-xs-3 text-center'>unit</div>
             <div class='col-xs-4 text-center'>value</div>
@@ -54,10 +54,14 @@ class EqDrawer{
     let content='';
     this.vars = eq.nodesToMonitor;
     for(var i=0;i<eq.nodesToMonitor.length;i++){
-      content += `<div class='row' id='detail-${eq.nodesToMonitor[i].sName}'>
+      let enabled = eq.nodesToMonitor[i].options.editable?'enabled':'disabled';
+      content += `<div class='row row-var' id='detail-${eq.nodesToMonitor[i].sName}'>
             <div class='col-xs-5'>${eq.nodesToMonitor[i].name}</div>
             <div class='col-xs-3 text-center'>${eq.nodesToMonitor[i].options.unit}</div>
-            <div class='col-xs-4 text-center' class='var-value'>0</div>
+            <div class='col-xs-4 text-center'>
+              <label class="sr-only" for="var-value-${i}">Email address</label>
+              <input type="text" class="form-control var-value input-sm" id="var-value-${i}" ${enabled}>
+            </div>
           </div>
           `;
     }
