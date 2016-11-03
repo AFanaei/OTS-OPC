@@ -1,4 +1,5 @@
 const bsn = require("bootstrap.native");
+const highcharts = require("highcharts");
 
 class EqDrawer{
   constructor(element){
@@ -12,6 +13,7 @@ class EqDrawer{
     });
     this.subIds=[];
     this.vars=[];
+    this.series = null;
   }
   // we should add this events to the bootstrap.native project manually.
   afterOpen(){
@@ -24,6 +26,40 @@ class EqDrawer{
         this.showChart(variable)
       }.bind(this,this.vars[i]));
     }
+    this.chart = highcharts.chart(this.element.querySelector('.var-chart'),{
+      chart: {
+          type: 'spline'
+      },
+      title:{'text':''},
+      xAxis: {
+          type: 'datetime',
+          dateTimeLabelFormats: { // don't display the dummy year
+            millisecond: '%S', //'%H:%M:%S.%L',
+            second: '%S',
+            minute: '%S',
+            hour: '%S',
+            day: '%S',
+            week: '%S',
+            month: '%S',
+            year: '%S',
+          },
+          title: {
+              text: 'Time(s)'
+          }
+      },
+      tooltip: {
+          pointFormat: '{point.x:%e. %b}: {point.y:.2f} m'
+      },
+
+      plotOptions: {
+          spline: {
+              marker: {
+                  enabled: true
+              }
+          }
+      },
+    });
+
   }
   beforeColse(){
     for(var i=0;i<this.vars.length;i++){
@@ -31,9 +67,29 @@ class EqDrawer{
     }
     this.vars=[];
     this.subIds=[];
+    this.series=null;
+    if(this.chartVar){
+      this.chartVar.unsubscribe(this.chartId);
+    }
+    this.chartId=null;
+    this.chartVar= null;
   }
   showChart(variable){
-    console.log(`${variable.name} is drawing`);
+
+    if(this.series){
+      this.series.remove();
+      this.chartVar.unsubscribe(this.chartId);
+      this.chartId=null;
+      this.chartVar= variable;
+    }
+    this.chart.setTitle(`${variable.eq.name}=>${variable.name}`);
+    this.series = this.chart.addSeries(
+      {name:`${variable.name}(${variable.options.unit})`,data:variable.history}
+    );
+    this.chartVar = variable;
+    this.chartId = variable.subscribe((x)=>{
+      this.series.addPoint([Date.now(),x]);
+    });
   }
   draw(eq){
     let TAG = {main:`
