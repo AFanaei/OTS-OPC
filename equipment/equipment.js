@@ -100,6 +100,8 @@ class EquipmentVar{
   }
   subscribe(callback){
     this.subscriptions[this.subscriptionId]=callback;
+    this.subscriptionId++;
+    return this.subscriptionId;
   }
   unsubscribe(subscriptionId){
     delete this.subscriptions[this.subscriptionId];
@@ -119,7 +121,7 @@ class EquipmentVar{
         this.history.shift();
     }
     //TODO: get time from opcserver.
-    this.history.push({Date.now(),value});
+    this.history.push({x:Date.now(),y:value});
   }
 }
 

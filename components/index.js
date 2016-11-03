@@ -6,7 +6,7 @@ const EqDrawer = require("./equipmentDrawer");
 const ipc = require('electron').ipcRenderer
 const bsn = require("bootstrap.native");
 
-const eqDrawer = new EqDrawer(document.getElementById("equipment-modal"));
+const eqDrawer = new EqDrawer(document.getElementById("eqModal"));
 const eqManager = new EqManager(document.getElementById("logs"));
 const logger = new Logger(document.getElementById("logs"));
 let helper = null;
@@ -33,7 +33,7 @@ ipc.on('load-layout', function(event, address) {
           document.getElementById(`sName-${x.sName}`).innerHTML = Math.round(newValue*100)/100;
         });
         document.getElementById(`id-${x.eq.id}`).addEventListener('click',function(event){
-          eqDrawer.draw(x);
+          eqDrawer.draw(x.eq);
         });
       });
       eqManager.startMonitoring(helper);
