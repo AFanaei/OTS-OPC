@@ -3,14 +3,20 @@ const Equipment = require("./equipment");
 
 class EqManager{
   constructor(){
+    this.timer=null; //variable of timer
     this.eqList=[];
     this.layout=[];
   }
   loadFromFile(address, helper,callback){
     EqSaver.loadData(address,function(data){
-      this.eqList = data.equipments.map(function(value,index){
-        return new Equipment(value.id, value.options, helper, value.nodes);
-      })
+      this.eqList = data.equipments.map((value,index)=>{
+        if(value.options.type=='timer'){
+          let eqq =new Equipment(value.id, value.options, helper,null, value.nodes);
+          this.timer = eqq.nodesToMonitor[0];
+          return eqq;
+        }
+        return new Equipment(value.id, value.options, helper,this.timer, value.nodes);
+      });
       this.layout = data.layout.map((v,i)=>{
         v['eq']= this.eqList[this.eqList.findIndex((x)=>{
           return x.id==v.id;
@@ -48,5 +54,5 @@ class EqManager{
     })
   }
 }
-
-module.exports = EqManager;
+let eqManager = new EqManager();
+module.exports = eqManager;

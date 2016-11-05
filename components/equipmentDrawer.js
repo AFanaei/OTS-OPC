@@ -1,6 +1,7 @@
 const bsn = require("bootstrap.native");
 const highcharts = require("highcharts");
 const opcua = require("node-opcua");
+const eqManager = require('../equipment/eqManager');
 
 class EqDrawer{
   constructor(element){
@@ -45,16 +46,16 @@ class EqDrawer{
           type: 'datetime',
           dateTimeLabelFormats: { // don't display the dummy year
             millisecond: '%S', //'%H:%M:%S.%L',
-            second: '%S',
-            minute: '%S',
-            hour: '%S',
-            day: '%S',
-            week: '%S',
-            month: '%S',
-            year: '%S',
+            second: '%H:%M:%S',
+            minute: '%H:%M',
+            hour: '%H:%M',
+            day: '%H',
+            week: '%H',
+            month: '%H',
+            year: '%H',
           },
           title: {
-              text: 'Time(s)'
+              text: 'Time'
           }
       },
       tooltip: {
@@ -102,7 +103,10 @@ class EqDrawer{
     );
     this.chartVar = variable;
     this.chartId = variable.subscribe((x)=>{
-      this.series.addPoint([Date.now(),x]);
+      let now = new Date();
+      let startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())/1000+3.5*3600;
+      console.log("startofday"+startOfDay);
+      this.series.addPoint([(startOfDay+eqManager.timer.lastValue)*1000,x]);
     });
     console.log('created:'+this.chartId);
   }

@@ -1,13 +1,12 @@
 const OpcHelper = require("../opc/opcHelper");
 const Equipment = require('../equipment/equipment');
-const EqManager = require('../equipment/eqManager');
+const eqManager = require('../equipment/eqManager');
 const Logger = require("../util/logger");
 const EqDrawer = require("./equipmentDrawer");
 const ipc = require('electron').ipcRenderer
 const bsn = require("bootstrap.native");
 
 const eqDrawer = new EqDrawer(document.getElementById("eqModal"));
-const eqManager = new EqManager(document.getElementById("logs"));
 const logger = new Logger(document.getElementById("logs"));
 let helper = null;
 let modal = null;

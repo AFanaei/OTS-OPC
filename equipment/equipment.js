@@ -1,10 +1,14 @@
-
 class Equipment{
-  constructor(id, options, helper, nodesToMonitor){
+  constructor(id, options, helper, timer, nodesToMonitor){
     this.id=id;
     this.options = options;
     this.opcHelper = helper;
     this.nodesToMonitor = nodesToMonitor.map((value,index)=>{
+      if(this.options.type=="timer"){
+        value.options.maxHistory=-1; // no need to log for timer.
+      }else{
+        value.options.timer=timer;
+      }
       return new EquipmentVar(value,this);
     });
   }
@@ -80,6 +84,7 @@ class EquipmentVar{
     this.options = Object.assign({
         editable:false,
         maxHistory:100,
+        timer:null
       },obj.options);
     this.subscriptions={};
     this.subscriptionId=0;
@@ -112,6 +117,12 @@ class EquipmentVar{
   startMonitoring(helper){ // can get helper from parent.
     this.monitoredInterface = helper.monitorNode(this.nodeId);
     this.monitoredInterface.on('changed',(value)=>{
+      if(this.name=="timer"){
+        if(this.lastValue==-1){
+          this.offset=value;
+        }
+        value-=this.offset;
+      }
       this.lastValue = value;
       this.log(value);
       this.publish(value);
@@ -121,11 +132,16 @@ class EquipmentVar{
     this.monitoredInterface = helper.unMonitorNode(this.nodeId);
   }
   log(value){
+    if(this.options.maxHistory==-1){
+      return;
+    }
     if(this.history.length==this.options.maxHistory){
         this.history.shift();
     }
     //TODO: get time from opcserver.
-    this.history.push({x:Date.now(),y:value});
+    let now = new Date();
+    let startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())/1000+3.5*3600;;
+    this.history.push({x:(startOfDay+this.options.timer.lastValue)*1000,y:value});
   }
   writeValue(value){
     this.eq.opcHelper.writeValue(this.nodeId,value,(res)=>{

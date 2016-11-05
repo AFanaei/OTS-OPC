@@ -1,15 +1,17 @@
 {"version":"1",
   "equipments":
-  [{"id":1,"options":{"name":"rafinate","type":"mStream"},"nodes":[{"sName":"A1113A","name":"rFlow","options":{"unit":"kmol/hr"}}]},
-  {"id":2,"options":{"name":"distilate","type":"mStream"},"nodes":[{"sName":"A1113B","name":"dFlow","options":{"unit":"kmol/hr"}}]},
-  {"id":3,"options":{"name":"valve","type":"valve"},"nodes":[
+  [
+  {"id":1,"options":{"name":"timer","type":"timer"},"nodes":[{"sName":"A1113E","name":"timer","options":{}}]},
+  {"id":2,"options":{"name":"rafinate","type":"mStream"},"nodes":[{"sName":"A1113A","name":"rFlow","options":{"unit":"kmol/hr"}}]},
+  {"id":3,"options":{"name":"distilate","type":"mStream"},"nodes":[{"sName":"A1113B","name":"dFlow","options":{"unit":"kmol/hr"}}]},
+  {"id":4,"options":{"name":"valve","type":"valve"},"nodes":[
     {"sName":"A1113C","name":"vPosition","options":{"unit":"%"}},
     {"sName":"A1113D","name":"vSetPoint","options":{"unit":"%","editable":true}}
   ]}
   ],
   "layout":[
-    {"id":1,"pos":{"l":770,"t":290,"w":100,"h":50},"data":{"sName":"A1113A"}},
-    {"id":2,"pos":{"l":770,"t":140,"w":100,"h":50},"data":{"sName":"A1113B"}},
-    {"id":3,"pos":{"l":150,"t":220,"w":100,"h":50},"data":{"sName":"A1113C"}}
+    {"id":2,"pos":{"l":770,"t":290,"w":100,"h":50},"data":{"sName":"A1113A"}},
+    {"id":3,"pos":{"l":770,"t":140,"w":100,"h":50},"data":{"sName":"A1113B"}},
+    {"id":4,"pos":{"l":150,"t":220,"w":100,"h":50},"data":{"sName":"A1113C"}}
   ]
 }
