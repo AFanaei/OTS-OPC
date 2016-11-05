@@ -109,7 +109,7 @@ class EquipmentVar{
   unsubscribe(subscriptionId){
     delete this.subscriptions[subscriptionId];
   }
-  startMonitoring(helper){
+  startMonitoring(helper){ // can get helper from parent.
     this.monitoredInterface = helper.monitorNode(this.nodeId);
     this.monitoredInterface.on('changed',(value)=>{
       this.lastValue = value;
@@ -117,7 +117,7 @@ class EquipmentVar{
       this.publish(value);
     });
   }
-  stopMonitoring(helper){
+  stopMonitoring(helper){// can get helper from parent.
     this.monitoredInterface = helper.unMonitorNode(this.nodeId);
   }
   log(value){
@@ -126,6 +126,11 @@ class EquipmentVar{
     }
     //TODO: get time from opcserver.
     this.history.push({x:Date.now(),y:value});
+  }
+  writeValue(value){
+    this.eq.opcHelper.writeValue(this.nodeId,value,(res)=>{
+      console.log("value changed" + res);
+    });
   }
 }
 

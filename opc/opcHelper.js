@@ -108,6 +108,18 @@ class OpcHelper {
     });
   }
 
+  writeValue(nodeId,value,callback){
+    this.session.writeSingleNode(nodeId, value, function(err,statusCode,info) {
+      if(!callback)
+        return ;
+      if (!err) {
+        callback(statusCode);
+        return;
+      }
+      callback(err);
+    });
+  }
+
   createSubscription(callback){
     this.subscription = new opcSubscription(this.session,{
         requestedPublishingInterval: 1000,

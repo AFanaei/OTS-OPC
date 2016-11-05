@@ -1,5 +1,6 @@
 const bsn = require("bootstrap.native");
 const highcharts = require("highcharts");
+const opcua = require("node-opcua");
 
 class EqDrawer{
   constructor(element){
@@ -19,12 +20,21 @@ class EqDrawer{
   afterOpen(){
     for(var i=0;i<this.vars.length;i++){
       let elem = this.element.querySelector(`#detail-${this.vars[i].sName}`);
+      // add listner to update input.
       this.subIds[i] = this.vars[i].subscribe(function(elem,newValue){
          elem.querySelector(`.var-value`).value=Math.round(newValue*100)/100;
       }.bind(this,elem));
+      // show chart
       elem.addEventListener('click',function(variable){
         this.showChart(variable)
       }.bind(this,this.vars[i]));
+      if(this.vars[i].options.editable){
+        elem.querySelector(`.var-value`).addEventListener('change',(function(variable){
+          return function(event){
+            variable.writeValue({dataType: opcua.DataType.Double,value:this.value});
+          };
+        }(this.vars[i])));
+      }
     }
     this.chart = highcharts.chart(this.element.querySelector('.var-chart'),{
       chart: {
@@ -76,8 +86,12 @@ class EqDrawer{
     this.chartVar= null;
   }
   showChart(variable){
+    if(this.chartVar && variable.nodeId==this.chartVar.nodeId)
+      return;
     if(this.series){
+      this.series.remove();
       this.series=null;
+      console.log('removed:'+this.chartId);
       this.chartVar.unsubscribe(this.chartId);
       this.chartId=null;
       this.chartVar= variable;
